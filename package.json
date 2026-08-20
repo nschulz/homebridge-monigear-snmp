@@ -1,0 +1,42 @@
+{
+  "name": "homebridge-monigear-snmp",
+  "version": "1.0.0",
+  "description": "Homebridge plugin for Monigear network temperature/humidity sensors (MN-NTHM, MN-WTHM, MN-NCO2TH, MN-NVOC) via SNMP V2c",
+  "license": "MIT",
+  "author": "",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "main": "src/index.js",
+  "type": "module",
+  "files": [
+    "src/",
+    "config.schema.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "homebridge-plugin",
+    "homebridge",
+    "homekit",
+    "monigear",
+    "snmp",
+    "temperature",
+    "humidity",
+    "mn-nthm",
+    "mn-wthm",
+    "mn-nco2th",
+    "mn-nvoc",
+    "iot",
+    "sensor",
+    "poe"
+  ],
+  "engines": {
+    "homebridge": ">=1.6.0",
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "net-snmp": "3.16.0"
+  }
+}
