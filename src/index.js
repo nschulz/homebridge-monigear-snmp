@@ -98,9 +98,10 @@ class MonigearSensor {
     this.active = false;
     this.session = null;
     this._pollTimer = null;
+    this._firstPoll = true;
     this.accessory = null;
 
-    this.log.info(`[${this.name}] Connecting to ${this.host}:${this.port} (community: ${this.community}, interval: ${this.pollInterval / 1000}s)`);
+    this.log.info(`Connecting to ${this.host}:${this.port} (community: ${this.community}, interval: ${this.pollInterval / 1000}s)`);
 
     this.registerAccessory();
     this.createSession();
@@ -113,12 +114,12 @@ class MonigearSensor {
     let accessory = this.platform.cachedAccessories.find(a => a.UUID === uuid);
 
     if (!accessory) {
-      this.log.info(`[${this.name}] Registering new accessory`);
+      this.log.info(`Registering new accessory: ${this.name}`);
       accessory = new this.api.platformAccessory(this.name, uuid);
       this.setupServices(accessory);
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [accessory]);
     } else {
-      this.log.info(`[${this.name}] Restoring from cache`);
+      this.log.info(`Restoring cached accessory: ${this.name}`);
       this.setupServices(accessory);
     }
 
@@ -177,7 +178,7 @@ class MonigearSensor {
 
     this.session = snmp.createSession(this.host, this.community, opts);
     this.session.on('error', (err) => {
-      this.log.error(`[${this.name}] SNMP error: ${err.message}`);
+      this.log.error(`SNMP error: ${err.message}`);
     });
   }
 
@@ -203,15 +204,16 @@ class MonigearSensor {
       this.humidity = reading.humidity;
 
       if (!this.active) {
-        this.log.info(`[${this.name}] Sensor online: ${this.temperature}°C, ${this.humidity}%RH`);
+        this.log.info(`Sensor online: ${this.temperature}°C, ${this.humidity}%RH`);
       }
       this.active = true;
 
-      this.log.debug(`[${this.name}] ${this.temperature}°C, ${this.humidity}%RH`);
+      this.log.debug(`${this.temperature}°C, ${this.humidity}%RH`);
     } catch (err) {
-      if (this.active) {
-        this.log.warn(`[${this.name}] Sensor offline: ${err.message}`);
+      if (this.active || this._firstPoll) {
+        this.log.warn(`Poll failed: ${err.message}`);
       }
+      this._firstPoll = false;
       this.active = false;
     }
 
